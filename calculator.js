@@ -36,11 +36,23 @@ function calculate(btnValue) {
   if (btnValue === '=' && output !== '') {
     try {
       // استبدال الرموز الرياضية بالقيم اللي JavaScript يفهمها
-      let expression = output.replace(/÷/g, '/').replace(/×/g, '*').replace(/%/g, '/100');
-      output = eval(expression).toString();
+      let expression = output
+        .replace(/÷/g, '/')
+        .replace(/×/g, '*')
+        .replace(/%/g, '/100');
+
+      let result = eval(expression);
+
+      // التحقق من نتيجة غير صالحة (NaN أو Infinity)
+      if (!isFinite(result)) {
+        output = 'Error';
+      } else {
+        output = result.toString();
+      }
+
       justCalculated = true;
     } catch {
-      output = "Error";
+      output = 'Error'; // ✅ نص عادي
       justCalculated = true;
     }
   } else if (btnValue === 'AC') {
@@ -58,23 +70,23 @@ function calculate(btnValue) {
       }
     }
 
-    // شرط 1: لا يبدأ بعلامة خاصة (إلا السالب -)
-    if (output === '' && specialChars.includes(btnValue) && btnValue !== '-') return;
+    if (output === '' && specialChars.includes(btnValue) && btnValue !== '-')
+      return;
 
     let lastChar = output.slice(-1);
 
-    // ✅ التعديل الجديد: لو آخر حرف عملية واللي ضغطته عملية → استبدال
-    if (specialChars.includes(lastChar) && specialChars.includes(btnValue) && btnValue !== '=') {
+    if (
+      specialChars.includes(lastChar) &&
+      specialChars.includes(btnValue) &&
+      btnValue !== '='
+    ) {
       output = output.slice(0, -1) + btnValue;
-    } 
-    // شرط 3: منع أكثر من نقطة في نفس الرقم
-    else if (btnValue === '.') {
+    } else if (btnValue === '.') {
       let parts = output.split(/[+\-×÷]/);
       let lastNumber = parts[parts.length - 1];
       if (lastNumber.includes('.')) return;
       output += btnValue;
-    } 
-    else {
+    } else {
       output += btnValue;
     }
   }
@@ -85,4 +97,3 @@ function calculate(btnValue) {
 buttons.forEach((button) => {
   button.addEventListener('click', (e) => calculate(e.target.dataset.value));
 });
-
