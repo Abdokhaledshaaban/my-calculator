@@ -36,14 +36,11 @@ function calculate(btnValue) {
   if (btnValue === '=' && output !== '') {
     try {
       // استبدال الرموز الرياضية بالقيم اللي JavaScript يفهمها
-      let expression = output
-        .replace(/÷/g, '/')
-        .replace(/×/g, '*')
-        .replace(/%/g, '/100');
+      let expression = output.replace(/÷/g, '/').replace(/×/g, '*').replace(/%/g, '/100');
       output = eval(expression).toString();
-      justCalculated = true; // ظهر الناتج
+      justCalculated = true;
     } catch {
-      output = 'Error';
+      output = "Error";
       justCalculated = true;
     }
   } else if (btnValue === 'AC') {
@@ -52,40 +49,34 @@ function calculate(btnValue) {
   } else if (btnValue === 'DEL') {
     output = output.toString().slice(0, -1);
   } else {
-    // 🔹 لو لسه عامل حساب
     if (justCalculated) {
       if (specialChars.includes(btnValue) && btnValue !== '=') {
-        // لو كتب عملية → يكمل على الناتج
         justCalculated = false;
       } else if (!specialChars.includes(btnValue)) {
-        // لو كتب رقم → يبدأ من جديد
         output = '';
         justCalculated = false;
       }
     }
 
     // شرط 1: لا يبدأ بعلامة خاصة (إلا السالب -)
-    if (output === '' && specialChars.includes(btnValue) && btnValue !== '-')
-      return;
+    if (output === '' && specialChars.includes(btnValue) && btnValue !== '-') return;
 
-    // شرط 2: منع تكرار العلامات
     let lastChar = output.slice(-1);
-    if (
-      specialChars.includes(lastChar) &&
-      specialChars.includes(btnValue) &&
-      btnValue !== '-'
-    ) {
-      return;
-    }
 
+    // ✅ التعديل الجديد: لو آخر حرف عملية واللي ضغطته عملية → استبدال
+    if (specialChars.includes(lastChar) && specialChars.includes(btnValue) && btnValue !== '=') {
+      output = output.slice(0, -1) + btnValue;
+    } 
     // شرط 3: منع أكثر من نقطة في نفس الرقم
-    if (btnValue === '.') {
+    else if (btnValue === '.') {
       let parts = output.split(/[+\-×÷]/);
       let lastNumber = parts[parts.length - 1];
       if (lastNumber.includes('.')) return;
+      output += btnValue;
+    } 
+    else {
+      output += btnValue;
     }
-
-    output += btnValue;
   }
 
   display.value = output;
@@ -94,3 +85,4 @@ function calculate(btnValue) {
 buttons.forEach((button) => {
   button.addEventListener('click', (e) => calculate(e.target.dataset.value));
 });
+
