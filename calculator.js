@@ -35,6 +35,14 @@ let justCalculated = false;
 function calculate(btnValue) {
   if (btnValue === '=' && output !== '') {
     try {
+      // ✅ لو آخر حرف عملية حسابية → نشيله
+      while (
+        specialChars.includes(output.slice(-1)) &&
+        output.slice(-1) !== '%'
+      ) {
+        output = output.slice(0, -1);
+      }
+
       // استبدال الرموز الرياضية بالقيم اللي JavaScript يفهمها
       let expression = output
         .replace(/÷/g, '/')
@@ -43,7 +51,6 @@ function calculate(btnValue) {
 
       let result = eval(expression);
 
-      // التحقق من نتيجة غير صالحة (NaN أو Infinity)
       if (!isFinite(result)) {
         output = 'Error';
       } else {
@@ -52,7 +59,7 @@ function calculate(btnValue) {
 
       justCalculated = true;
     } catch {
-      output = 'Error'; // ✅ نص عادي
+      output = 'Error';
       justCalculated = true;
     }
   } else if (btnValue === 'AC') {
